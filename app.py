@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, render_template_string
 import requests
-import webbrowser
 
 app = Flask(__name__)
 
@@ -53,20 +52,18 @@ def get_leetcode_data():
 def index():
     return render_template_string("""
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang=\"en\">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset=\"UTF-8\">
+        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
         <title>ps2006 Stats</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
-
             * {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
             }
-
             body {
                 font-family: 'Orbitron', sans-serif;
                 background: #0a0a0a;
@@ -80,15 +77,27 @@ def index():
                 position: relative;
                 overflow: hidden;
             }
-
+            .background {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle, rgba(0,0,0,0.1) 10%, transparent 80%);
+                animation: moveBackground 10s linear infinite;
+            }
+            @keyframes moveBackground {
+                0% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0); }
+            }
             h1 {
                 font-size: 28px;
-                margin-bottom: 30px;
+                margin-bottom: 20px;
                 color: #fff;
                 text-transform: uppercase;
                 letter-spacing: 3px;
             }
-
             .container {
                 display: flex;
                 justify-content: space-between;
@@ -96,7 +105,6 @@ def index():
                 width: 70%;
                 max-width: 900px;
             }
-
             .stat {
                 font-size: 50px;
                 font-weight: bold;
@@ -105,214 +113,128 @@ def index():
                 text-align: center;
                 border-radius: 10px;
                 transition: transform 0.2s ease-in-out;
-                position: relative;
                 box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
             }
-
-            .stat:hover {
-                transform: scale(1.08);
+            .stat .label {
+                font-size: 16px;
+                display: block;
+                margin-top: 5px;
+                opacity: 0.8;
             }
-
             .codeforces {
                 background: rgba(0, 116, 204, 0.25);
                 color: #00aaff;
                 border: 2px solid #0074cc;
-                text-shadow: 0 0 10px rgba(0, 174, 255, 0.7);
             }
-
             .leetcode {
                 background: rgba(255, 161, 22, 0.25);
                 color: #ffa116;
                 border: 2px solid #ffa116;
-                text-shadow: 0 0 10px rgba(255, 161, 22, 0.7);
             }
-
             .middle {
                 background: rgba(255, 255, 255, 0.2);
                 color: #ffffff;
                 border: 2px solid #ffffff;
-                text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
             }
-
-            .animated-bg {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: -1;
-                background: linear-gradient(-45deg, #1a1a1a, #0a0a0a, #222, #111);
-                background-size: 400% 400%;
-                animation: gradientShift 6s infinite alternate ease-in-out;
-            }
-
-            @keyframes gradientShift {
-                0% { background-position: 0% 50%; }
-                100% { background-position: 100% 50%; }
-            }
-
-            .particle {
-                position: absolute;
-                background: rgba(255, 255, 255, 0.2);
-                width: 5px;
-                height: 5px;
-                border-radius: 50%;
-                pointer-events: none;
-                opacity: 0;
-                animation: floatParticles linear infinite;
-            }
-
-            @keyframes floatParticles {
-                from {
-                    transform: translateY(100vh) translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateY(-10vh) translateX(calc(10vw - 5vw * random()));
-                    opacity: 0;
-                }
-            }
-
-
-            .label {
-                font-size: 18px;
-                font-weight: normal;
-                margin-top: 5px;
-                opacity: 0.8;
-            }
-
-            .profile-buttons {
+            .buttons {
                 margin-top: 20px;
+                display: flex;
+                gap: 15px;
             }
-
-            .profile-btn {
-                display: inline-block;
-                padding: 12px 24px;
+            .btn {
+                padding: 10px 20px;
+                border-radius: 8px;
                 font-size: 18px;
                 font-weight: bold;
-                border-radius: 10px;
                 text-decoration: none;
-                transition: all 0.3s ease-in-out;
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+                display: inline-block;
+                text-align: center;
             }
-
             .cf-btn {
                 background: rgba(0, 116, 204, 0.25);
                 color: #00aaff;
                 border: 2px solid #0074cc;
-                text-shadow: 0 0 10px rgba(0, 174, 255, 0.7);
             }
-
-            .cf-btn:hover {
-                background: rgba(0, 116, 204, 0.5);
-            }
-
             .lc-btn {
                 background: rgba(255, 161, 22, 0.25);
                 color: #ffa116;
                 border: 2px solid #ffa116;
-                text-shadow: 0 0 10px rgba(255, 161, 22, 0.7);
             }
-
-            .lc-btn:hover {
-                background: rgba(255, 161, 22, 0.5);
+            @media (max-width: 768px) {
+                .container { flex-direction: column; gap: 15px; }
+                .buttons { flex-direction: column; }
             }
-
-
+            canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
         </style>
     </head>
     <body>
-
-        <div class="animated-bg"></div>
-        
-        <h1> ps2006 </h1>
-
-        <div class="container">
-            <div class="stat codeforces">
-                <span id="cfRating">Loading...</span>
-                <div class="label">Codeforces Rating</div>
-            </div>
-
-            <div class="stat middle">
-                <span id="lcSolved">Loading...</span>
-                <div class="label">LC Problems Solved</div>
-            </div>
-
-            <div class="stat leetcode">
-                <span id="lcRating">Loading...</span>
-                <div class="label">LeetCode Rating</div>
-            </div>
+        <div class=\"background\"></div>
+        <canvas id="particleCanvas"></canvas>
+        <h1>ps2006</h1>
+        <div class=\"container\">
+            <div class=\"stat codeforces"><span id=\"cfRating\">Loading...</span><span class=\"label\">Codeforces Rating</span></div>
+            <div class=\"stat middle"><span id=\"lcSolved\">Loading...</span><span class=\"label\">LC Problems Solved</span></div>
+            <div class=\"stat leetcode"><span id=\"lcRating\">Loading...</span><span class=\"label\">LeetCode Rating</span></div>
         </div>
-
-        <div class="profile-buttons">
-            <a href="https://codeforces.com/profile/ps2006" class="profile-btn cf-btn" target="_blank">View Codeforces</a>
-            <a href="https://leetcode.com/psinfinity/" class="profile-btn lc-btn" target="_blank">View LeetCode</a>
-        </div>
+        <div class=\"buttons\">
+            <a href="https://codeforces.com/profile/ps2006" class="btn cf-btn" target="_blank">View Codeforces</a>
+            <a href="https://leetcode.com/psinfinity/" class="btn lc-btn" target="_blank">View LeetCode</a>
+        </div>                                  
 
         <script>
-            function animateNumber(id, target) {
-                let element = document.getElementById(id);
-                let start = 0;
-                
-                let speed = Math.max(1, Math.floor(target / 50)); 
-                let duration = 500; 
-                let stepTime = Math.max(10, duration / target);
-
-                let timer = setInterval(() => {
-                    start += speed;
-                    if (start >= target) {
-                        start = target;
-                        clearInterval(timer);
-                    }
-                    element.innerText = start;
-                }, stepTime);
-            }
-
             function fetchStats() {
-                fetch("/stats")
-                    .then(response => response.json())
-                    .then(data => {
-                        let cfRating = data.codeforces.rating || 0;
-                        let lcSolved = data.leetcode.problems_solved || 0;
-                        let lcRating = data.leetcode.rating || 0;
-
-                        animateNumber("cfRating", cfRating);
-                        animateNumber("lcSolved", lcSolved);
-                        animateNumber("lcRating", lcRating);
-                    })
-                    .catch(error => console.error("Error fetching stats:", error));
+                fetch("/stats").then(response => response.json()).then(data => {
+                    document.getElementById("cfRating").innerText = data.codeforces.rating || 0;
+                    document.getElementById("lcSolved").innerText = data.leetcode.problems_solved || 0;
+                    document.getElementById("lcRating").innerText = data.leetcode.rating || 0;
+                });
             }
-
             window.onload = fetchStats;
-
-            function createParticles() {
-                const numParticles = 20; 
-                for (let i = 0; i < numParticles; i++) {
-                    let particle = document.createElement("div");
-                    particle.classList.add("particle");
-                    document.body.appendChild(particle);
-
-                    let size = Math.random() * 6 + 2; 
-                    particle.style.width = `${size}px`;
-                    particle.style.height = `${size}px`;
-
-                    // Randomize starting position
-                    particle.style.left = `${Math.random() * 100}vw`;
-                    particle.style.top = `${Math.random() * 100}vh`;
-
-                    // Make movement diagonal instead of stuck in one place
-                    let randomXMove = Math.random() * 20 - 10; // Moves left or right slightly
-                    particle.style.animation = `floatParticles ${Math.random() * 4 + 3}s linear infinite`;
-
-                    setTimeout(() => particle.remove(), 5000);
+                                  
+        </script>
+                <script>
+            const canvas = document.getElementById("particleCanvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const particles = [];
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 5 + 1;
+                    this.speedX = Math.random() * 3 - 1.5;
+                    this.speedY = Math.random() * 3 - 1.5;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                }
+                draw() {
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.beginPath();
+                    ctx.fillRect(this.x, this.y, this.size, this.size);
+                    ctx.fill();
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x - this.speedX * 5, this.y - this.speedY * 5);
+                    ctx.stroke();
                 }
             }
-
-            setInterval(createParticles, 1000);
-
-
-            setInterval(createParticles, 1000); // Create particles every second
-
+            function init() {
+                for (let i = 0; i < 100; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            }
+            init();
+            animate();
         </script>
 
     </body>
@@ -326,5 +248,4 @@ def get_stats():
     return jsonify({"codeforces": cf_data, "leetcode": lc_data})
 
 if __name__ == "__main__":
-    webbrowser.open("http://127.0.0.1:5000/")
     app.run(debug=True)
