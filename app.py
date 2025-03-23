@@ -146,6 +146,7 @@ def index():
                 border-radius: 8px;
                 font-size: 18px;
                 font-weight: bold;
+                transition: all 0.3s;
                 text-decoration: none;
                 display: inline-block;
                 text-align: center;
@@ -160,6 +161,10 @@ def index():
                 color: #ffa116;
                 border: 2px solid #ffa116;
             }
+            .btn:hover {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
             @media (max-width: 768px) {
                 .container { flex-direction: column; gap: 15px; }
                 .buttons { flex-direction: column; }
@@ -168,7 +173,7 @@ def index():
         </style>
     </head>
     <body>
-        <div class=\"background\"></div>
+        
         <canvas id="particleCanvas"></canvas>
         <h1>ps2006</h1>
         <div class=\"container\">
@@ -176,10 +181,16 @@ def index():
             <div class=\"stat middle"><span id=\"lcSolved\">Loading...</span><span class=\"label\">LC Problems Solved</span></div>
             <div class=\"stat leetcode"><span id=\"lcRating\">Loading...</span><span class=\"label\">LeetCode Rating</span></div>
         </div>
-        <div class=\"buttons\">
-            <a href="https://codeforces.com/profile/ps2006" class="btn cf-btn" target="_blank">View Codeforces</a>
-            <a href="https://leetcode.com/psinfinity/" class="btn lc-btn" target="_blank">View LeetCode</a>
-        </div>                                  
+        <div class="buttons">
+            <a href="https://codeforces.com/profile/ps2006" class="btn cf-btn" rel="noopener noreferrer">
+                View Codeforces
+            </a>
+            <a href="https://leetcode.com/psinfinity/" class="btn lc-btn" rel="noopener noreferrer">
+                View LeetCode
+            </a>
+        </div>
+
+                        
 
         <script>
             function fetchStats() {
